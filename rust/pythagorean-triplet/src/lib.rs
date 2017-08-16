@@ -22,40 +22,27 @@ pub fn find() -> Option<u64> {
             println!("thread {}: lower: {}, upper: {}", index, lower, upper);
 
             for a in lower..upper {
-                for b in 1..1000 {
+                for b in 1..1000 - a {
                     if !*running.lock().unwrap() {
-                        println!(
-                            "early return {}, tested {} datapoints ({:6.2}%)",
-                            index,
-                            counter,
-                            (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64
-                        );
+                        println!("early return {}, tested {} datapoints", index, counter);
                         return;
                     }
 
                     if b == a {
                         continue;
                     }
-                    for c in 1..1000 {
-                        if c == a || c == b {
-                            continue;
-                        }
-                        let sum = (b as u32).pow(2) + (c as u32).pow(2);
-                        if sum == (a as u32).pow(2) && a + b + c == 1000 {
-                            println!("a: {}\nb: {}\nc: {}", a, b, c);
-                            let _ = tx.send(Some(a * b * c));
-                            println!(
-                                "{} returning, tried {} datapoints ({:6.2}%)",
-                                index,
-                                counter,
-                                (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64
-                            );
-                            return;
-                        }
-                        counter += 1;
+                    let c = 1000 - (a + b);
+                    let sum = (b as u32).pow(2) + (c as u32).pow(2);
+                    if sum == (a as u32).pow(2) && a + b + c == 1000 {
+                        println!("a: {}\nb: {}\nc: {}", a, b, c);
+                        let _ = tx.send(Some(a * b * c));
+                        println!("{} returning, tried {} datapoints", index, counter);
+                        return;
                     }
+                    counter += 1;
                 }
             }
+            println!("exhaustive return {}, tried {} datapoints", index, counter);
         }));
     }
 
