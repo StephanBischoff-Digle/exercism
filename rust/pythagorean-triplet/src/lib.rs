@@ -24,10 +24,12 @@ pub fn find() -> Option<u64> {
             for a in lower..upper {
                 for b in 1..1000 {
                     if !*running.lock().unwrap() {
-                        println!("early return {}, tested {} datapoints ({:6.2}%)", 
+                        println!(
+                            "early return {}, tested {} datapoints ({:6.2}%)",
                             index,
                             counter,
-                            (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64);
+                            (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64
+                        );
                         return;
                     }
 
@@ -42,10 +44,12 @@ pub fn find() -> Option<u64> {
                         if sum == (a as u32).pow(2) && a + b + c == 1000 {
                             println!("a: {}\nb: {}\nc: {}", a, b, c);
                             let _ = tx.send(Some(a * b * c));
-                            println!("{} returning, tried {} datapoints ({:6.2}%)",
+                            println!(
+                                "{} returning, tried {} datapoints ({:6.2}%)",
                                 index,
                                 counter,
-                                (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64);
+                                (counter as f64) / (delta as f64 * 1_000_000f64) * 100f64
+                            );
                             return;
                         }
                         counter += 1;
